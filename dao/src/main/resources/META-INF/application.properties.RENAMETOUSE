@@ -1,0 +1,15 @@
+#database properties
+app.jdbc.driverClassName=org.h2.Driver
+app.jdbc.url=jdbc:h2:tcp://localhost/~/NotificationManager
+app.jdbc.username=sa
+app.jdbc.password=sa
+app.persistanceProvider.dialect=org.hibernate.dialect.H2Dialect
+
+#messageService properties
+app.message.url=
+app.message.key=
+app.message.sender=
+app.message.emailProviderHost=
+app.message.emailProviderPort=
+app.message.emailProviderLogin=
+app.message.emailProviderPassword=
