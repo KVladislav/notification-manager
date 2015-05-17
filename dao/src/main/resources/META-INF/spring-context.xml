@@ -1,0 +1,72 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   					   http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+	   					   http://www.springframework.org/schema/tx
+                            http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <context:property-placeholder location="classpath*:META-INF/application.properties"/>
+    <context:annotation-config/>
+    <context:component-scan base-package="com.eisgroup.notification_manager.dao"/>
+
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+          depends-on="liquibase"
+          p:dataSource-ref="dataSource2"
+          p:persistenceXmlLocation="classpath*:META-INF/persistence.xml"
+          p:jpaVendorAdapter-ref="jpaVendorAdapter"
+          p:persistenceUnitName="JPA-Hibernate"
+          p:packagesToScan="com.eisgroup.hrcrm.model"/>
+
+    <util:properties id="jpaProperties">
+        <prop key="hibernate.dialect">"${app.persistanceProvider.dialect}"</prop>
+    </util:properties>
+
+    <bean id="jpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+
+    <bean id="liquibase" class="liquibase.integration.spring.SpringLiquibase">
+        <property name="dataSource" ref="dataSource2"/>
+        <property name="changeLog" value="classpath:/liquibase/db.changelog-master.xml"/>
+    </bean>
+
+    <bean id="transactionManager"
+          class="org.springframework.orm.jpa.JpaTransactionManager"
+          p:entityManagerFactory-ref="entityManagerFactory"/>
+    <tx:annotation-driven mode="proxy" transaction-manager="transactionManager"/>
+
+
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+          destroy-method="close"
+          p:driverClass="${app.jdbc.driverClassName}"
+          p:jdbcUrl="${app.jdbc.url}"
+          p:user="${app.jdbc.username}"
+          p:password="${app.jdbc.password}"
+          p:acquireIncrement="5"
+          p:idleConnectionTestPeriod="60"
+          p:maxPoolSize="100"
+          p:maxStatements="50"
+          p:minPoolSize="10"/>
+
+    <bean id="messageProvider" class="com.eisgroup.notification_manager.model.MessageProvider"
+          p:smsProviderSender="${app.message.sender}"
+          p:smsProviderKey="${app.message.key}"
+          p:smsProviderURL="${app.message.url}"
+          p:emailProviderHost="${app.message.emailProviderHost}"
+          p:emailProviderPort="${app.message.emailProviderPort}"
+          p:emailProviderFrom="${app.message.emailProviderLogin}"
+          p:emailProviderLogin="${app.message.emailProviderLogin}"
+          p:emailProviderPassword="${app.message.emailProviderPassword}"/>
+
+    <bean id="dataSource2"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${app.jdbc.driverClassName}" />
+        <property name="url" value="${app.jdbc.url}" />
+        <property name="username" value="${app.jdbc.username}" />
+        <property name="password" value="${app.jdbc.password}" />
+    </bean>
+
+</beans>

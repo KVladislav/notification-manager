@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet author="VKarpenko" id="sprint0-1">
+        <createTable tableName="MESSAGE">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)"/>
+            <column name="ADDRESS" type="VARCHAR(100)"/>
+            <column name="BODY" type="VARCHAR(2048)"/>
+            <column name="STATE" type="VARCHAR(100)"/>
+            <column name="DISPATCHDAY" type="DATETIME"/>
+            <column name="STATUS" type="VARCHAR(20)"/>
+            <column name="USER_ID" type="BIGINT(19)"/>
+            <column name="SMSID" type="VARCHAR(20)"/>
+        </createTable>
+
+        <createTable tableName="USERS">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)"/>
+            <column name="NAME" type="VARCHAR(100)"/>
+            <column name="SURNAME" type="VARCHAR(100)"/>
+            <column name="EMAIL" type="VARCHAR(100)"/>
+            <column name="MOBILENUMBER" type="VARCHAR(100)"/>
+            <column name="ISDELETED" type="BOOLEAN" defaultValue="0"/>
+            <column name="CREATIONDATE" type="DATETIME"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="USER_ID"  baseTableName="MESSAGE"
+                                 constraintName="USER_ID" deferrable="false"
+                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="ID" referencedTableName="USERS"/>
+    </changeSet>
+
+    <changeSet id="sprint0-2" author="VKarpenko">
+        <addColumn tableName="MESSAGE">
+            <column name="MESSAGE_TYPE" type="VARCHAR(20)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="sprint0-3" author="VKarpenko">
+        <addColumn tableName="MESSAGE">
+            <column name="SUBJECT" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="sprint0-4" author="VKarpenko">
+        <modifyDataType tableName="MESSAGE" columnName="STATE" newDataType="VARCHAR(1024)"/>
+    </changeSet>
+</databaseChangeLog>

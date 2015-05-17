@@ -1,0 +1,160 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <h:form id="sendMessageForm">
+        <p:panelGrid id="sendSMSGrid" style="width: 100%;table-layout:fixed;" styleClass="noBorder">
+            <ui:fragment rendered="#{!usersBean.multipleDelivery}">
+                <p:row>
+                    <p:column style="width: 25%">
+                        <h:outputLabel value="#{msgs['user.fullName']}"/>
+                    </p:column>
+
+                    <p:column style="width: 75%">
+                        <p:outputLabel id="userName" value="#{usersBean.newSMS.user.getFullName()}"/>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <h:outputLabel value="#{msgs['user.to']}"/>
+                    </p:column>
+
+                    <p:column>
+                        <p:outputLabel id="mobileNumber"
+                                       value="#{usersBean.newSMS.address}" rendered="#{usersBean.iSSmsMessageType}"/>
+                        <p:outputLabel id="toEmail"
+                                       value="#{usersBean.newEmail.address}" rendered="#{!usersBean.iSSmsMessageType}"/>
+
+                    </p:column>
+                </p:row>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{usersBean.multipleDelivery}">
+                <p:row>
+                    <p:column colspan="2">
+                        <h:outputLabel value="#{msgs['userList.multipleDelivery']}"/>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column colspan="2">
+                        <p:outputLabel value="#{msgs['sms.multipleWillBeSent']} "/>
+                        <p:outputLabel value="#{usersBean.selectedUsers.size()}"/>
+                    </p:column>
+
+                </p:row>
+            </ui:fragment>
+
+            <p:row>
+                <p:column style="width: 25%">
+                    <h:outputLabel value="#{msgs['message.type']}:"/>
+                </p:column>
+                <p:column style="width: 75%">
+                    <p:selectOneRadio id="selectMessageType" value="#{usersBean.iSSmsMessageType}">
+                        <f:selectItem itemValue="#{true}" itemLabel="#{msgs['message.typeSms']}"/>
+                        <f:selectItem itemValue="#{false}" itemLabel="#{msgs['message.typeEmail']}"/>
+                        <p:ajax update="sendMessageForm"/>
+                    </p:selectOneRadio>
+                </p:column>
+            </p:row>
+
+            <ui:fragment rendered="#{usersBean.iSSmsMessageType}">
+                <p:row>
+                    <p:column>
+                        <h:outputLabel value="#{msgs['message.Text']}"/>
+                    </p:column>
+                    <p:column>
+                        <p:message for="newSMS" id="newSMSMessage" display="text"/>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column colspan="2">
+                        <p:inputTextarea id="newSMS"
+                                         autoResize="false"
+                                         required="true"
+                                         requiredMessage="#{msgs['Error.MandatoryFields']}"
+                                         style="width:39em;height: 10em"
+                                         value="#{usersBean.newSMS.body}" maxlength="255">
+                            <p:ajax update="newSMSMessage, smsLenggthCounter" event="keyup"/>
+                            <f:validator validatorId="smsValidator"/>
+                        </p:inputTextarea>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column colspan="2">
+                        <p:outputLabel value="Symbols: #{usersBean.newSMS.body.length()}/255" id="smsLenggthCounter"/>
+                    </p:column>
+                </p:row>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{!usersBean.iSSmsMessageType}">
+                <p:row>
+                    <p:column>
+                        <h:outputLabel value="#{msgs['message.subject']}"/>
+                    </p:column>
+                    <p:column>
+                        <p:message for="emailSubject" id="emailSubjectMessage" display="text"/>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column colspan="2">
+                        <p:inputText id="emailSubject"
+                                         required="true"
+                                         requiredMessage="#{msgs['Error.MandatoryFields']}"
+                                         style="width:39em"
+                                         value="#{usersBean.newEmail.subject}" maxlength="255">
+                            <p:ajax update="emailSubjectMessage" event="keyup"/>
+                            <f:validator validatorId="smsValidator"/>
+                        </p:inputText>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <h:outputLabel value="#{msgs['message.Text']}"/>
+                    </p:column>
+                    <p:column>
+                        <p:message for="newEmailBody" id="newEmailBodyMessage" display="text"/>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column colspan="2">
+                        <p:inputTextarea id="newEmailBody"
+                                         autoResize="false"
+                                         required="true"
+                                         requiredMessage="#{msgs['Error.MandatoryFields']}"
+                                         style="width:39em;height: 10em"
+                                         value="#{usersBean.newEmail.body}" maxlength="2048">
+                            <p:ajax update="newEmailBodyMessage" event="keyup"/>
+                            <f:validator validatorId="smsValidator"/>
+                        </p:inputTextarea>
+                    </p:column>
+                </p:row>
+
+            </ui:fragment>
+
+            <p:row>
+                <p:column colspan="3">
+                    <p:commandButton update=":userListForm, sendMessageForm"
+                                     oncomplete="if (!args.validationFailed) PF('sendSMSDlg').hide();"
+                                     actionListener="#{usersBean.sendMessage}"
+                                     id="sendSMSButton"
+                                     value="#{msgs['DialogButton.Send']}"
+                                     icon="ui-icon-check"/>
+
+                    <p:spacer width="20"/>
+                    <p:commandButton value="#{msgs['DialogButton.Cancel']}"
+                                     process="@this"
+                                     oncomplete="PF('sendSMSDlg').hide();">
+                        <p:resetInput target="sendMessageForm"/>
+                    </p:commandButton>
+                </p:column>
+            </p:row>
+        </p:panelGrid>
+    </h:form>
+</ui:composition>

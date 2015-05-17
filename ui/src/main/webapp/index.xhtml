@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+    <ui:composition template="templates/layout.xhtml">
+        <ui:define name="content">
+
+            <h:form id="userListForm">
+                <p:panel style="width: 1100px;display:block; text-align:center;margin: 0 auto;">
+                    <p:outputLabel value="#{msgs['userList.title']}" style="margin-right: 60em"/>
+                    <p:dataTable id="usersTable"
+                                 var="user"
+                                 value="#{usersBean.users}"
+                                 styleClass="borderless"
+                                 style="margin-top: 10px;"
+                                 selection="#{usersBean.selectedUsers}"
+                                 rowSelectMode="checkbox"
+                                 rowKey="#{user.id}"
+                                 emptyMessage="#{msgs['userList.Empty']}">
+                        <p:column selectionMode="multiple" rendered="#{usersBean.multipleDelivery}"
+                                  style="width:1em;text-align:center">
+                        </p:column>
+                        <p:ajax event="rowSelectCheckbox" update="multipleDeliveryButton"/>
+                        <p:ajax event="rowUnselectCheckbox" update="multipleDeliveryButton"/>
+                        <p:ajax event="toggleSelect" update="multipleDeliveryButton"/>
+                        <p:column headerText="#{msgs['user.name']}" style="width:10em;">
+                            <h:outputText value="#{user.name}"/>
+                        </p:column>
+
+                        <p:column headerText="#{msgs['user.sureName']}" style="width:10em;">
+                            <h:outputText value="#{user.surName}"/>
+                        </p:column>
+
+                        <p:column headerText="#{msgs['user.email']}" style="width:10em;">
+                            <h:outputText value="#{user.eMail}"/>
+                        </p:column>
+
+                        <p:column headerText="#{msgs['user.mobileNumber']}" style="width:10em;">
+                            <h:outputText value="#{user.mobileNumber}"/>
+                        </p:column>
+
+                        <p:column headerText="#{msgs['user.created']}" style="width:10em;">
+                            <h:outputText value="#{user.creationDate}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="#{msgs['userList.actions']}" rendered="#{!usersBean.multipleDelivery}" style="width:10em;">
+                            <p:commandButton title="#{msgs['userList.sendSMS']}"
+                                             icon="ui-icon-mail-closed"
+                                             actionListener="#{usersBean.prepareNewMessage(user)}"
+                                             update="userListForm, sendMessageForm"
+                                             oncomplete="PF('sendSMSDlg').show();"
+                                             styleClass="iconOnlyButton"/>
+                            <p:commandButton title="#{msgs['userList.showSMSHistory']}"
+                                             icon="ui-icon-folder-open"
+                                             actionListener="#{usersBean.prepareMessageLog(user)}"
+                                             update="userListForm, messageLogForm"
+                                             oncomplete="PF('smsLogDlg').show();"
+                                             styleClass="iconOnlyButton"/>
+                            <p:commandButton title="#{msgs['userList.edit']}"
+                                             icon="ui-icon-pencil"
+                                             oncomplete="PF('createEditDlg').show();"
+                                             update="userListForm, createEditUserForm"
+                                             actionListener="#{usersBean.startCreateEdit(user)}"
+                                             styleClass="iconOnlyButton"/>
+                            <p:commandButton title="#{msgs['userList.delete']}"
+                                             icon="ui-icon-trash"
+                                             actionListener="#{usersBean.setUser(user)}"
+                                             oncomplete="PF('deleteUserDlg').show();"
+                                             styleClass="iconOnlyButton"/>
+
+                        </p:column>
+                        <f:facet name="header">
+                            <p:commandButton actionListener="#{usersBean.setIsMultipleDelivery(true)}"
+                                             rendered="#{!usersBean.multipleDelivery}"
+                                             title="#{msgs['userList.multipleDelivery']}"
+                                             icon="ui-icon-mail-open"
+                                             update="userListForm"
+                                             style="width: 30px;margin-left: 63em"
+                                             styleClass="iconOnlyButton">
+                            </p:commandButton>
+                            <p:commandButton actionListener="#{usersBean.startCreateEdit(null)}"
+                                             rendered="#{!usersBean.multipleDelivery}"
+                                             oncomplete="PF('createEditDlg').show();"
+                                             title="#{msgs['userList.newUser']}"
+                                             icon="ui-icon-plusthick"
+                                             update="userListForm, createEditUserForm"
+                                             style="width: 30px"
+                                             styleClass="iconOnlyButton">
+                            </p:commandButton>
+
+                            <p:commandButton value="#{msgs['userList.sendSMS']}"
+                                             icon="ui-icon-mail-open"
+                                             rendered="#{usersBean.multipleDelivery}"
+                                             id="multipleDeliveryButton"
+                                             disabled="#{empty usersBean.selectedUsers}"
+                                             actionListener="#{usersBean.prepareNewMessage(null)}"
+                                             update="userListForm, sendMessageForm"
+                                             oncomplete="PF('sendSMSDlg').show();"
+                                             style="margin-left: 54em"/>
+                            <p:commandButton actionListener="#{usersBean.setIsMultipleDelivery(false)}"
+                                             rendered="#{usersBean.multipleDelivery}"
+                                             value="#{msgs['DialogButton.Cancel']}"
+                                             update="userListForm">
+                            </p:commandButton>
+                        </f:facet>
+
+                    </p:dataTable>
+                </p:panel>
+            </h:form>
+
+            <p:confirmDialog message="#{msgs['popup.deleteUser']}"
+                             widgetVar="deleteUserDlg" closable="false" severity="alert">
+                <h:panelGroup layout="block" style="text-align: right">
+                    <h:form>
+                        <p:commandButton value="#{msgs['DialogButton.Ok']}"
+                                         styleClass="hrcrm-button"
+                                         oncomplete="PF('deleteUserDlg').hide();"
+                                         actionListener="#{usersBean.deleteUser}"
+                                         update="userListForm, createEditUserForm"/>
+
+                        <p:spacer width="20"/>
+                        <p:commandButton value="#{msgs['DialogButton.Cancel']}"
+                                         type="button"
+                                         styleClass="hrcrm-button"
+                                         onclick="PF('deleteUserDlg').hide();"/>
+                    </h:form>
+                </h:panelGroup>
+            </p:confirmDialog>
+
+            <p:dialog id="createEditDlg" header="#{msgs['createEditDlg.title']}"
+                      widgetVar="createEditDlg"
+                      modal="true"
+                      closable="false"
+                      resizable="false"
+                      width="600"
+                      height="200">
+                <ui:include src="createEditUser.xhtml"/>
+            </p:dialog>
+            <p:dialog id="sendSMSDlg" header="#{msgs['sendSMSDlg.title']}"
+                      widgetVar="sendSMSDlg"
+                      modal="true"
+                      closable="false"
+                      resizable="false"
+                      width="600"
+                      height="350">
+                <ui:include src="sendMessage.xhtml"/>
+            </p:dialog>
+            <p:dialog id="smsLogDlg" header="#{msgs['sendSMSDlg.title']}"
+                      widgetVar="smsLogDlg"
+                      modal="true"
+                      closable="false"
+                      resizable="false"
+                      width="1100"
+                      height="450">
+                <ui:include src="messageLog.xhtml"/>
+            </p:dialog>
+
+        </ui:define>
+
+    </ui:composition>
+</h:body>
+</html>

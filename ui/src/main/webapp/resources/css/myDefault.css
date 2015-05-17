@@ -1,0 +1,252 @@
+html {
+  font-family: sans-serif;
+  font-size: 10px;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  overflow-y: scroll;
+}
+
+body {
+  margin: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #333;
+  background-color: #fff;
+}
+
+a {
+  text-decoration: none;
+  color: #337AB7;
+}
+
+a:hover {
+    color: #154975;
+    text-decoration: underline;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: inherit;
+  font-weight: 500;
+  line-height: 1.1;
+  color: inherit;
+}
+
+h1,
+h2,
+h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+h4,
+h5,
+h6 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+h1 {
+  font-size: 36px;
+}
+
+h2 {
+  font-size: 30px;
+}
+
+h3 {
+  font-size: 24px;
+}
+
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 14px;
+}
+
+h6 {
+  font-size: 12px;
+}
+
+hr {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+label {
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+p {
+  margin: 0 0 10px;
+}
+
+.ui-datatable.borderlesss thead th,
+.ui-datatable.borderlesss tbody,
+.ui-datatable.borderlesss tbody tr,
+.ui-datatable.borderlesss tbody td {
+    border-style: none;
+    overflow: visible;
+    border-collapse: separate;
+    border-spacing: 30px;
+}
+
+.ui-datatable.borderless table {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    table-layout:fixed;
+}
+
+.ui-datatable.borderless thead th {
+    text-align: left;
+    text-shadow: none;
+    white-space: nowrap;
+    margin: 0;
+    overflow: hidden;
+
+}
+
+.ui-datatable.borderless .ui-paginator,
+.ui-datatable.borderless .ui-paginator-page {
+    background-color: transparent;
+    border-style: none;
+}
+
+.ui-datatable.borderless .ui-datatable-data tr,
+.ui-datatable.borderless .ui-datatable-data-empty tr,
+.ui-datatable.borderless .ui-datatable-data td,
+.ui-datatable.borderless .ui-datatable-data-empty td,
+.ui-datatable.borderless .ui-datatable-data th {
+    text-align: left;
+    /*margin: 0;*/
+    border-top-style: none;
+    border-bottom-style: none;
+    padding: 5pt;
+    text-overflow: ellipsis;
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.noBorder .datatable-borders td{
+    border-right: 1px solid rgb(215, 215, 215) !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.noBorder tr,
+.noBorder td {
+    /*height: 3em;*/
+    border: 0 !important;
+    margin: 0 !important;
+    padding: 0 5px !important;
+
+    background-color: transparent;
+}
+
+.noBorderSimple tr,
+.noBorderSimple td {
+    border: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: transparent;
+}
+.iconOnlyButton{
+    background: transparent !important;
+    border-radius: 0;
+    background-position: -10px -10px;
+    border: none !important;
+    margin: 0;
+}
+
+.hover-over-cut {
+    word-wrap:break-word;
+    max-width: 475px;
+    width: auto;
+    font-size: 10pt;
+}
+
+.navbar:before,
+.navbar:after,
+.navbar-header:before,
+.navbar-header:after {
+    display: table;
+    content: " ";
+}
+
+.navbar:after,
+.navbar-header:after {
+    clear: both;
+}
+
+.navbar-brand {
+    float: left;
+    padding-top: 5px;
+    margin-left: inherit;
+}
+
+.navbar-inverse {
+    background-color: #222;
+    border-color: #080808;
+}
+
+.navbar-inverse .navbar-brand {
+    color: #9d9d9d;
+}
+
+.navbar-inverse .navbar-brand:hover,
+.navbar-inverse .navbar-brand:focus {
+    color: #fff;
+    background-color: transparent;
+}
+
+@media (min-width: 768px) {
+    .container {
+        width: 750px;
+    }
+}
+
+@media (min-width: 992px) {
+    .container {
+        width: 970px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container {
+        width: 1170px;
+    }
+}
+
+@media (min-width: 768px) {
+    .navbar > .container .navbar-brand,
+    .navbar > .container-fluid .navbar-brand {
+        margin-left: -15px;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .jumbotron {
+        padding: 48px 0;
+    }
+    .container .jumbotron,
+    .container-fluid .jumbotron {
+        padding-right: 60px;
+        padding-left: 60px;
+    }
+    .jumbotron h1,
+    .jumbotron .h1 {
+        font-size: 63px;
+    }
+}

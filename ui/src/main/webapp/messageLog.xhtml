@@ -1,0 +1,131 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <h:form id="messageLogForm">
+        <p:panelGrid id="sendSMSGrid" style="width: 100%;table-layout:fixed;" styleClass="noBorder">
+            <p:row>
+                <p:column style="width:20%;">
+                    <p:outputLabel value="#{msgs['user.fullName']}" for="userFullName"/>
+                </p:column>
+
+                <p:column style="width:80%;">
+                    <p:outputLabel value="#{usersBean.user.getFullName()}" id="userFullName"/>
+                </p:column>
+            </p:row>
+
+            <p:row>
+                <p:column style="width: 25%">
+                    <h:outputLabel value="#{msgs['message.type']}:"/>
+                </p:column>
+                <p:column style="width: 75%">
+                    <p:selectOneRadio id="selectMessageType" value="#{usersBean.iSSmsMessageType}">
+                        <f:selectItem itemValue="#{true}" itemLabel="#{msgs['message.typeSms']}"/>
+                        <f:selectItem itemValue="#{false}" itemLabel="#{msgs['message.typeEmail']}"/>
+                        <p:ajax update="messageLogForm"/>
+                    </p:selectOneRadio>
+                </p:column>
+            </p:row>
+
+            <ui:fragment rendered="#{usersBean.iSSmsMessageType}">
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{msgs['user.mobileNumber']}:" for="userMobileNumber"/>
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{usersBean.user.mobileNumber}" id="userMobileNumber"/>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column colspan="2">
+                        <p:dataTable id="smsLogTable" var="sms" value="#{usersBean.smsMessageList}"
+                                     styleClass="borderless"
+                                     style="margin-top: 10px;" emptyMessage="#{msgs['smsList.Empty']}">
+                            <p:column headerText="#{msgs['sms.smsId']}" style="width:4em;">
+                                <h:outputText value="#{sms.smsId}"/>
+                            </p:column>
+
+                            <p:column headerText="#{msgs['sms.body']}" style="width:20em;" id="smsBody">
+                                <h:outputText value="#{sms.body}" title="#{sms.body}"/>
+                                <p:tooltip for="smsBody" styleClass="hover-over-cut" trackMouse="true"/>
+                            </p:column>
+
+                            <p:column headerText="#{msgs['sms.dispatchDay']}" style="width:11em;">
+                                <h:outputText value="#{sms.dispatchDay}"/>
+                            </p:column>
+
+                            <p:column headerText="#{msgs['sms.status']}" style="width:4em;">
+                                <h:outputText value="#{sms.status.name}"/>
+                            </p:column>
+
+                            <p:column headerText="#{msgs['sms.report']}" style="width:20em;" id="smsReport">
+                                <h:outputText value="#{sms.state}" title="#{sms.state}">
+                                    <p:tooltip for="smsReport" styleClass="hover-over-cut" trackMouse="true"/>
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column style="width:1em;">
+                                <p:commandButton title="#{msgs['smsList.refresh']}"
+                                                 rendered="#{!(sms.status.name.equals('Fail') or sms.status.name.equals('Delivered'))}"
+                                                 icon="ui-icon-refresh"
+                                                 actionListener="#{usersBean.refreshSMSState(sms)}"
+                                                 update="smsLogTable"
+                                                 styleClass="iconOnlyButton"/>
+                            </p:column>
+
+                        </p:dataTable>
+                    </p:column>
+                </p:row>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{!usersBean.iSSmsMessageType}">
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="#{msgs['user.email']}:" for="userEmail"/>
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{usersBean.user.eMail}" id="userEmail"/>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column colspan="2">
+                        <p:dataTable id="emailLogTable" var="email" value="#{usersBean.emailList}"
+                                     styleClass="borderless"
+                                     style="margin-top: 10px;" emptyMessage="#{msgs['emailList.Empty']}">
+                            <p:column headerText="#{msgs['message.subject']}" style="width:20em;" id="emailSubject">
+                                <h:outputText value="#{email.subject}" title="#{email.subject}">
+                                    <p:tooltip for="emailSubject" styleClass="hover-over-cut" trackMouse="true"/>
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column headerText="#{msgs['message.Text']}" style="width:20em;" id="emailBody">
+                                <h:outputText value="#{email.body}" title="#{email.body}"/>
+                                <p:tooltip for="emailBody" styleClass="hover-over-cut" trackMouse="true"/>
+                            </p:column>
+
+                            <p:column headerText="#{msgs['sms.dispatchDay']}" style="width:11em;">
+                                <h:outputText value="#{email.dispatchDay}"/>
+                            </p:column>
+
+                            <p:column headerText="#{msgs['sms.status']}" style="width:4em;" id="emailStatus">
+                                <h:outputText value="#{email.status.name}" title="#{email.state}" >
+                                    <p:tooltip for="emailStatus" styleClass="hover-over-cut" trackMouse="true"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                    </p:column>
+                </p:row>
+            </ui:fragment>
+
+            <p:row>
+                <p:column colspan="2">
+                    <p:commandButton value="#{msgs['DialogButton.Close']}"
+                                     process="@this"
+                                     oncomplete="PF('smsLogDlg').hide();"/>
+                </p:column>
+            </p:row>
+        </p:panelGrid>
+    </h:form>
+</ui:composition>
