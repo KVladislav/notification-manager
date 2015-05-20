@@ -1,6 +1,7 @@
 package com.eisgroup.notification_manager.model;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import java.util.Date;
 
 /**
@@ -16,7 +17,11 @@ public class User extends BaseObject{
     private String eMail;
     private String mobileNumber;
     private boolean isDeleted;
+    private boolean isActive;
     private Date creationDate;
+
+    @ManyToOne
+    private UserGroup userGroup;
 
     public Date getCreationDate() {
         return creationDate;
@@ -68,5 +73,21 @@ public class User extends BaseObject{
 
     public String getFullName(){
         return getName() + " " + getSurName();
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public UserGroup getUserGroup() {
+        return userGroup;
+    }
+
+    public void setUserGroup(UserGroup userGroup) {
+        this.userGroup = userGroup;
     }
 }

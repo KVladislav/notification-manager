@@ -21,7 +21,7 @@ public class LatinNumberSpecialValidator implements Validator{
         String inputString = (String) value;
         if (inputString == null)
             return;
-        Pattern p = Pattern.compile("^[\\x41-\\x7A\\x20]*$");
+        Pattern p = Pattern.compile("^[\\x00-\\x7A\\x20]*$");
         Matcher m = p.matcher(inputString);
         if (!m.matches()) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "", resourceBundle.getString("Error.nonLatinLetter")));

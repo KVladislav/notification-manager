@@ -1,0 +1,158 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <h:form id="groupManagementForm">
+        <h:outputLabel value="#{msgs['userList.groupManagement']}"/>
+        <p:dataTable id="groupManagementTable"
+                     var="group"
+                     value="#{usersBean.groupList}"
+                     styleClass="borderless"
+                     style="margin-top: 10px;table-layout:fixed"
+                     rendered="#{!usersBean.groupEdited}"
+                     emptyMessage="#{msgs['groupManagement.Empty']}">
+
+            <p:column headerText="#{msgs['groupManagement.id']}" style="width:4em;">
+                <h:outputText value="#{group.id}"/>
+            </p:column>
+
+            <p:column headerText="#{msgs['groupManagement.name']}" style="width:10em;" id="groupName">
+                <h:outputText value="#{group.groupName}" title="#{group.groupName}">
+                    <p:tooltip for="groupName" styleClass="hover-over-cut" trackMouse="true"/>
+                </h:outputText>
+            </p:column>
+
+            <p:column headerText="#{msgs['groupManagement.description']}" style="width:20em;" id="groupDescription">
+                <h:outputText value="#{group.description}" title="#{group.description}">
+                    <p:tooltip for="groupDescription" styleClass="hover-over-cut" trackMouse="true"/>
+                </h:outputText>
+            </p:column>
+
+            <p:column headerText="#{msgs['userList.actions']}" style="width:4em;">
+                <p:commandButton title="#{msgs['userList.edit']}"
+                                 icon="ui-icon-pencil"
+                                 update="groupManagementForm"
+                                 actionListener="#{usersBean.startCreateEditGroup(group)}"
+                                 styleClass="iconOnlyButton"/>
+                <p:commandButton title="#{msgs['userList.delete']}"
+                                 icon="ui-icon-trash"
+                                 actionListener="#{usersBean.setNewGroup(group)}"
+                                 oncomplete="PF('deleteGroupDlg').show();"
+                                 styleClass="iconOnlyButton"/>
+
+            </p:column>
+            <f:facet name="header">
+                <p:commandButton actionListener="#{usersBean.startCreateEditGroup(null)}"
+                                 title="#{msgs['groupManagement.newGroup']}"
+                                 icon="ui-icon-plusthick"
+                                 update="groupManagementForm"
+                                 style="width: 30px;margin-left: 73em"
+                                 styleClass="iconOnlyButton"/>
+            </f:facet>
+
+        </p:dataTable>
+        <p:commandButton value="#{msgs['DialogButton.Close']}"
+                         rendered="#{!usersBean.groupEdited}"
+                         process="@this"
+                         oncomplete="PF('groupManagementDlg').hide();"/>
+
+        <p:panelGrid id="createEditGroup"
+                     style="width: 100%;table-layout:fixed;"
+                     rendered="#{usersBean.groupEdited}"
+                     styleClass="noBorder">
+
+            <p:row>
+                <p:column style="width: 15%">
+                    <h:outputLabel for="groupNameInput" value="#{msgs['group.name']}">
+                        <h:outputLabel value="*" style="color: red"/>
+                    </h:outputLabel>
+                </p:column>
+
+                <p:column style="width: 45%">
+                    <p:inputText id="groupNameInput"
+                                 style="width:27em;"
+                                 required="true"
+                                 requiredMessage="#{msgs['Error.MandatoryFields']}"
+                                 value="#{usersBean.newGroup.groupName}"
+                                 maxlength="22">
+                        <f:validator validatorId="latinNumberSpecialValidator"/>
+                        <p:ajax update="groupNameInputMsg" event="keyup"/>
+                        <p:ajax update="groupNameInputMsg" event="change"/>
+                    </p:inputText>
+                </p:column>
+                <p:column style="width:40%;">
+                    <p:message for="groupNameInput" id="groupNameInputMsg" display="text"/>
+                </p:column>
+            </p:row>
+
+            <p:row>
+                <p:column colspan="3">
+                    <h:outputLabel value="#{msgs['group.description']}"/>
+                </p:column>
+            </p:row>
+
+            <p:row>
+                <p:column colspan="2">
+                    <p:inputTextarea id="groupDescriptionInput"
+                                     autoResize="false"
+                                     style="width:38em;height: 10em"
+                                     value="#{usersBean.newGroup.description}" maxlength="2048">
+                        <p:ajax update="groupDescriptionInputMessage" event="keyup"/>
+                        <f:validator validatorId="latinNumberSpecialValidator"/>
+                    </p:inputTextarea>
+                </p:column>
+                <p:column>
+                    <p:message for="groupDescriptionInput" id="groupDescriptionInputMessage" display="text"/>
+                </p:column>
+            </p:row>
+
+            <p:row>
+                <p:column colspan="3">
+                    <p:commandButton rendered="#{empty usersBean.newGroup.id}"
+                                     update="groupManagementForm"
+                                     actionListener="#{usersBean.createGroup}"
+                                     id="groupCreateButton"
+                                     value="#{msgs['DialogButton.Create']}"
+                                     icon="ui-icon-check"/>
+
+                    <p:commandButton rendered="#{!empty usersBean.newGroup.id}"
+                                     update="groupManagementForm"
+                                     actionListener="#{usersBean.updateGroup}"
+                                     id="groupSaveButton"
+                                     value="#{msgs['DialogButton.Save']}"
+                                     icon="ui-icon-check">
+                    </p:commandButton>
+
+                    <p:spacer width="20"/>
+                    <p:commandButton value="#{msgs['DialogButton.Cancel']}"
+                                     actionListener="#{usersBean.setIsGroupEdited(false)}"
+                                     immediate="true"
+                                     update="groupManagementForm">
+
+                    </p:commandButton>
+                </p:column>
+            </p:row>
+        </p:panelGrid>
+    </h:form>
+
+    <p:confirmDialog message="#{msgs['popup.deleteGroup']}" appendTo="@(body)"
+                     widgetVar="deleteGroupDlg" closable="false" severity="alert">
+        <h:panelGroup layout="block" style="text-align: right">
+            <h:form>
+                <p:commandButton value="#{msgs['DialogButton.Ok']}"
+                                 styleClass="hrcrm-button"
+                                 oncomplete="PF('deleteGroupDlg').hide();"
+                                 actionListener="#{usersBean.deleteGroup}"
+                                 update="groupManagementForm"/>
+
+                <p:spacer width="20"/>
+                <p:commandButton value="#{msgs['DialogButton.Cancel']}"
+                                 type="button"
+                                 styleClass="hrcrm-button"
+                                 onclick="PF('deleteGroupDlg').hide();"/>
+            </h:form>
+        </h:panelGroup>
+    </p:confirmDialog>
+</ui:composition>

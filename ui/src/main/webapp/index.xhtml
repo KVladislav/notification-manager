@@ -30,12 +30,13 @@
                         <p:ajax event="rowSelectCheckbox" update="multipleDeliveryButton"/>
                         <p:ajax event="rowUnselectCheckbox" update="multipleDeliveryButton"/>
                         <p:ajax event="toggleSelect" update="multipleDeliveryButton"/>
-                        <p:column headerText="#{msgs['user.name']}" style="width:10em;">
-                            <h:outputText value="#{user.name}"/>
-                        </p:column>
 
                         <p:column headerText="#{msgs['user.sureName']}" style="width:10em;">
                             <h:outputText value="#{user.surName}"/>
+                        </p:column>
+
+                        <p:column headerText="#{msgs['user.name']}" style="width:10em;">
+                            <h:outputText value="#{user.name}"/>
                         </p:column>
 
                         <p:column headerText="#{msgs['user.email']}" style="width:10em;">
@@ -84,9 +85,8 @@
                                              title="#{msgs['userList.multipleDelivery']}"
                                              icon="ui-icon-mail-open"
                                              update="userListForm"
-                                             style="width: 30px;margin-left: 63em"
-                                             styleClass="iconOnlyButton">
-                            </p:commandButton>
+                                             style="width: 30px;margin-left: 61em"
+                                             styleClass="iconOnlyButton"/>
                             <p:commandButton actionListener="#{usersBean.startCreateEdit(null)}"
                                              rendered="#{!usersBean.multipleDelivery}"
                                              oncomplete="PF('createEditDlg').show();"
@@ -94,8 +94,16 @@
                                              icon="ui-icon-plusthick"
                                              update="userListForm, createEditUserForm"
                                              style="width: 30px"
-                                             styleClass="iconOnlyButton">
-                            </p:commandButton>
+                                             styleClass="iconOnlyButton"/>
+
+                            <p:commandButton
+                                             rendered="#{!usersBean.multipleDelivery}"
+                                             onclick="PF('groupManagementDlg').show();"
+                                             title="#{msgs['userList.groupManagement']}"
+                                             icon="ui-icon-gear"
+                                             style="width: 30px"
+                                             styleClass="iconOnlyButton"/>
+
 
                             <p:commandButton value="#{msgs['userList.sendSMS']}"
                                              icon="ui-icon-mail-open"
@@ -141,8 +149,8 @@
                       modal="true"
                       closable="false"
                       resizable="false"
-                      width="600"
-                      height="200">
+                      width="650"
+                      height="250">
                 <ui:include src="createEditUser.xhtml"/>
             </p:dialog>
             <p:dialog id="sendSMSDlg" header="#{msgs['sendSMSDlg.title']}"
@@ -162,6 +170,16 @@
                       width="1100"
                       height="450">
                 <ui:include src="messageLog.xhtml"/>
+            </p:dialog>
+
+            <p:dialog id="groupManagementDlg" header="#{msgs['sendSMSDlg.title']}"
+                      widgetVar="groupManagementDlg"
+                      modal="true"
+                      closable="false"
+                      resizable="false"
+                      width="1100"
+                      height="450">
+                <ui:include src="groupManagement.xhtml"/>
             </p:dialog>
 
         </ui:define>

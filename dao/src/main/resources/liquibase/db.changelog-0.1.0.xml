@@ -46,4 +46,25 @@
     <changeSet id="sprint0-4" author="VKarpenko">
         <modifyDataType tableName="MESSAGE" columnName="STATE" newDataType="VARCHAR(1024)"/>
     </changeSet>
+
+    <changeSet id="spring0-5" author="Vkarpenko">
+        <createTable tableName="USERGROUP">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)"/>
+            <column name="GROUPNAME" type="VARCHAR(100)"/>
+            <column name="DESCRIPTION" type="VARCHAR(2048)"/>
+            <column name="ISDELETED" type="BOOLEAN" defaultValue="0"/>
+        </createTable>
+        <addColumn tableName="USERS">
+            <column name="USERGROUP_ID" type="BIGINT(19)"/>
+        </addColumn>
+        <addForeignKeyConstraint baseColumnNames="USERGROUP_ID"  baseTableName="USERS"
+                                 constraintName="USERGROUP_ID" deferrable="false"
+                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="ID" referencedTableName="USERGROUP"/>
+        <addColumn tableName="USERS">
+            <column name="ISACTIVE" type="BOOLEAN" defaultValue="1"/>
+        </addColumn>
+    </changeSet>
+
+
 </databaseChangeLog>

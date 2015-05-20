@@ -3,6 +3,7 @@ package com.eisgroup.notification_manager.ui.beans;
 import com.eisgroup.notification_manager.model.EmailMessage;
 import com.eisgroup.notification_manager.model.SMSMessage;
 import com.eisgroup.notification_manager.model.User;
+import com.eisgroup.notification_manager.model.UserGroup;
 import com.eisgroup.notification_manager.service.EmailService;
 import com.eisgroup.notification_manager.service.SmsService;
 import com.eisgroup.notification_manager.service.UserService;
@@ -45,12 +46,16 @@ public class UsersBean implements Serializable {
     private List<EmailMessage> EmailList;
     private boolean isMultipleDelivery;
     private List<User> selectedUsers;
+    private List<UserGroup> groupList;
+    private UserGroup newGroup;
+    private boolean isGroupEdited;
 
     @PostConstruct
     public void init() {
         users = userService.getAllActiveUsers();
         setiSSmsMessageType(true);
         setIsMultipleDelivery(false);
+        groupList = userService.getAllActiveGroups();
     }
 
 
@@ -90,8 +95,15 @@ public class UsersBean implements Serializable {
             setNewSMS(new SMSMessage());
             setNewEmail(new EmailMessage());
         }
+    }
 
-
+    public void startCreateEditGroup(UserGroup group) {
+        if (group!=null) {
+            setNewGroup(group);
+        } else {
+            setNewGroup(new UserGroup());
+        }
+        setIsGroupEdited(true);
     }
 
     public void prepareMessageLog(User user) {
@@ -111,6 +123,12 @@ public class UsersBean implements Serializable {
         userService.deleteUser(getUser());
         init();
     }
+
+    public void deleteGroup() {
+        userService.deleteUserGroup(getNewGroup());
+        init();
+    }
+
 
     public void emailValidator(FacesContext context, UIComponent component, Object value) {
         String email = ((String) value).trim();
@@ -145,7 +163,7 @@ public class UsersBean implements Serializable {
         return !(dbUser != null && (getUser().getId() == null || !getUser().getId().equals(dbUser.getId())));
     }
 
-    public void create() {
+    public void createUser() {
         getUser().setCreationDate(new Date());
         getUser().seteMail(getUser().geteMail().trim());
         getUser().setName(getUser().getName().trim());
@@ -155,13 +173,29 @@ public class UsersBean implements Serializable {
         init();
     }
 
-    public void save() {
+    public void createGroup() {
+        getNewGroup().setGroupName(getNewGroup().getGroupName().trim());
+        getNewGroup().setDescription(getNewGroup().getDescription().trim());
+        userService.createUserGroup(getNewGroup());
+        setIsGroupEdited(false);
+        init();
+    }
+
+    public void updateUser() {
         getUser().setCreationDate(new Date());
         getUser().seteMail(getUser().geteMail().trim());
         getUser().setName(getUser().getName().trim());
         getUser().setSurName(getUser().getSurName().trim());
         getUser().setMobileNumber(getUser().getMobileNumber().trim());
         userService.saveUser(getUser());
+        init();
+    }
+
+    public void updateGroup() {
+        getNewGroup().setGroupName(getNewGroup().getGroupName().trim());
+        getNewGroup().setDescription(getNewGroup().getDescription().trim());
+        userService.saveUserGroup(getNewGroup());
+        setIsGroupEdited(false);
         init();
     }
 
@@ -249,5 +283,29 @@ public class UsersBean implements Serializable {
 
     public void setEmailList(List<EmailMessage> emailList) {
         EmailList = emailList;
+    }
+
+    public List<UserGroup> getGroupList() {
+        return groupList;
+    }
+
+    public void setGroupList(List<UserGroup> groupList) {
+        this.groupList = groupList;
+    }
+
+    public UserGroup getNewGroup() {
+        return newGroup;
+    }
+
+    public void setNewGroup(UserGroup newGroup) {
+        this.newGroup = newGroup;
+    }
+
+    public boolean isGroupEdited() {
+        return isGroupEdited;
+    }
+
+    public void setIsGroupEdited(boolean isGroupEdited) {
+        this.isGroupEdited = isGroupEdited;
     }
 }

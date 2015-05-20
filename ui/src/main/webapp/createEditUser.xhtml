@@ -8,7 +8,7 @@
         <p:panelGrid id="createUserGrid" style="width: 100%;table-layout:fixed;" styleClass="noBorder">
 
             <p:row>
-                <p:column style="width: 15%">
+                <p:column style="width: 20%">
                     <h:outputLabel for="userName" value="#{msgs['user.name']}">
                         <h:outputLabel value="*" style="color: red"/>
                     </h:outputLabel>
@@ -27,7 +27,7 @@
                     </p:inputText>
                 </p:column>
 
-                <p:column style="width:55%;">
+                <p:column style="width:50%;">
                     <p:message for="userName" id="userNameMsg" display="text"/>
                 </p:column>
             </p:row>
@@ -107,11 +107,41 @@
             </p:row>
 
             <p:row>
+                <p:column>
+                    <h:outputLabel for="userGroup" value="#{msgs['user.group']}">
+                        <h:outputLabel value="*" style="color: red"/>
+                    </h:outputLabel>
+                </p:column>
+
+                <p:column>
+                    <p:selectOneMenu id="userGroup"
+                                     effectSpeed="fast"
+                                     required="true"
+                                     requiredMessage="#{msgs['Error.MandatoryFields']}"
+                                     value="#{usersBean.user.userGroup}"
+                                     converter="#{groupConverter}"
+                                     style="width:100%; margin-top: 3px">
+                        <f:selectItem/>
+                        <f:selectItems
+                                value="#{usersBean.groupList}"
+                                var="group"
+                                itemLabel="#{group.groupName}"
+                                itemValue="#{group}"/>
+                        <p:ajax update="userGroupMsg" event="change"/>
+                    </p:selectOneMenu>
+                </p:column>
+
+                <p:column>
+                    <p:message for="userGroup" id="userGroupMsg" display="text"/>
+                </p:column>
+            </p:row>
+
+            <p:row>
                 <p:column colspan="3">
                     <p:commandButton rendered="#{empty usersBean.user.id}"
                                      update=":userListForm, createEditUserForm"
                                      oncomplete="if (!args.validationFailed) PF('createEditDlg').hide();"
-                                     actionListener="#{usersBean.create}"
+                                     actionListener="#{usersBean.createUser}"
                                      id="userCreateButton"
                                      value="#{msgs['DialogButton.Create']}"
                                      icon="ui-icon-check"/>
@@ -119,7 +149,7 @@
                     <p:commandButton rendered="#{!empty usersBean.user.id}"
                                      update=":userListForm, createEditUserForm"
                                      oncomplete="if (!args.validationFailed) PF('createEditDlg').hide();"
-                                     actionListener="#{usersBean.save}"
+                                     actionListener="#{usersBean.updateUser}"
                                      id="userSaveButton"
                                      value="#{msgs['DialogButton.Save']}"
                                      icon="ui-icon-check">
