@@ -2,6 +2,7 @@ package com.eisgroup.notification_manager.service;
 
 import com.eisgroup.notification_manager.model.User;
 import com.eisgroup.notification_manager.model.UserGroup;
+import org.primefaces.model.TreeNode;
 
 import java.util.List;
 
@@ -19,5 +20,6 @@ public interface UserService {
     void saveUserGroup(UserGroup userGroup);
     void deleteUserGroup(UserGroup userGroup);
     UserGroup getUserGroupById(long id);
+    TreeNode getAllActiveUsersNode();
 
 }

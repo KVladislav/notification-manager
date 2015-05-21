@@ -9,6 +9,7 @@ import com.eisgroup.notification_manager.service.SmsService;
 import com.eisgroup.notification_manager.service.UserService;
 import com.eisgroup.notification_manager.ui.validators.EmailValidator;
 import com.eisgroup.notification_manager.ui.validators.MobileValidator;
+import org.primefaces.model.TreeNode;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -19,10 +20,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
+import java.util.*;
 
 @ManagedBean
 @ViewScoped
@@ -49,10 +47,14 @@ public class UsersBean implements Serializable {
     private List<UserGroup> groupList;
     private UserGroup newGroup;
     private boolean isGroupEdited;
+    private TreeNode userListNode;
+    private TreeNode[] selectedNodes;
+    private TreeNode userNode;
 
     @PostConstruct
     public void init() {
         users = userService.getAllActiveUsers();
+        userListNode = userService.getAllActiveUsersNode();
         setiSSmsMessageType(true);
         setIsMultipleDelivery(false);
         groupList = userService.getAllActiveGroups();
@@ -84,21 +86,31 @@ public class UsersBean implements Serializable {
     }
 
     public void prepareNewMessage(User user) {
-        if (user != null && !isMultipleDelivery) {
+        if (user != null) {
+            setIsMultipleDelivery(false);
             setNewEmail(new EmailMessage());
             setNewSMS(new SMSMessage());
             getNewSMS().setUser(user);
             getNewEmail().setUser(user);
             getNewSMS().setAddress(user.getMobileNumber());
             getNewEmail().setAddress(user.geteMail());
-        } else if (isMultipleDelivery) {
+        } else {
             setNewSMS(new SMSMessage());
+            setIsMultipleDelivery(true);
             setNewEmail(new EmailMessage());
+            selectedUsers = new ArrayList<>();
+            for (TreeNode selectedUserNode : selectedNodes) {
+                User selectedUser = (User) selectedUserNode.getData();
+                if (selectedUser.getId() == null) {
+                    continue;
+                }
+                selectedUsers.add(selectedUser);
+            }
         }
     }
 
     public void startCreateEditGroup(UserGroup group) {
-        if (group!=null) {
+        if (group != null) {
             setNewGroup(group);
         } else {
             setNewGroup(new UserGroup());
@@ -307,5 +319,44 @@ public class UsersBean implements Serializable {
 
     public void setIsGroupEdited(boolean isGroupEdited) {
         this.isGroupEdited = isGroupEdited;
+    }
+
+    public TreeNode getUserListNode() {
+        return userListNode;
+    }
+
+    public void setUserListNode(TreeNode userListNode) {
+        this.userListNode = userListNode;
+    }
+
+
+    public TreeNode getUserNode() {
+        return userNode;
+    }
+
+    public void setUserNode(TreeNode userNode) {
+        this.userNode = userNode;
+    }
+
+    public void setSelectedNodes(TreeNode[] selectedNodes) {
+        if (selectedNodes == null) {
+            return;
+        }
+        List<TreeNode> selectedNodesList = new ArrayList<>();
+        for (TreeNode node : selectedNodes) {
+            if (node.isSelectable()) {
+                selectedNodesList.add(node);
+            } else {
+                selectedNodesList.remove(node.getParent());
+                node.setSelected(false);
+            }
+        }
+        this.selectedNodes = selectedNodesList.toArray(new TreeNode[selectedNodesList.size()]);
+
+        System.out.println(this.selectedNodes.length);
+    }
+
+    public TreeNode[] getSelectedNodes() {
+        return selectedNodes;
     }
 }

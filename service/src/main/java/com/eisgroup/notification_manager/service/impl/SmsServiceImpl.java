@@ -82,15 +82,17 @@ public class SmsServiceImpl implements SmsService {
         message.setDispatchDay(new Date());
         String xmlString = generateXmlForSMS(message);
 
-        try {
-            String xmlReport = sendXML(xmlString);
-            message = generateReport(message, xmlReport);
+        System.out.println(xmlString);
 
-        } catch (IOException | ParserConfigurationException | SAXException e) {
-            message.setStatus(MessageStatus.FAIL);
-            message.setState(e.getMessage());
-        }
-        messageDAO.create(message);
+//        try {
+//            String xmlReport = sendXML(xmlString);
+//            message = generateReport(message, xmlReport);
+//
+//        } catch (IOException | ParserConfigurationException | SAXException e) {
+//            message.setStatus(MessageStatus.FAIL);
+//            message.setState(e.getMessage());
+//        }
+//        messageDAO.create(message);
     }
 
     private SMSMessage generateReport(SMSMessage message, String xmlReport) throws IOException, SAXException, ParserConfigurationException {

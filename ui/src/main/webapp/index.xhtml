@@ -13,82 +13,86 @@
         <ui:define name="content">
 
             <h:form id="userListForm">
-                <p:panel style="width: 1100px;display:block; text-align:center;margin: 0 auto;">
+                <p:panel style="width: 1100px;display:block; margin: 0 auto;">
                     <p:outputLabel value="#{msgs['userList.title']}" style="margin-right: 60em"/>
-                    <p:dataTable id="usersTable"
-                                 var="user"
-                                 value="#{usersBean.users}"
+                    <p:treeTable id="usersTable"
+                                 var="userNode"
+                                 value="#{usersBean.userListNode}"
                                  styleClass="borderless"
                                  style="margin-top: 10px;"
-                                 selection="#{usersBean.selectedUsers}"
-                                 rowSelectMode="checkbox"
-                                 rowKey="#{user.id}"
+                                 selection="#{usersBean.selectedNodes}"
+                                 selectionMode="checkbox"
+                                 showUnselectableCheckbox="true"
                                  emptyMessage="#{msgs['userList.Empty']}">
-                        <p:column selectionMode="multiple" rendered="#{usersBean.multipleDelivery}"
-                                  style="width:1em;text-align:center">
-                        </p:column>
-                        <p:ajax event="rowSelectCheckbox" update="multipleDeliveryButton"/>
-                        <p:ajax event="rowUnselectCheckbox" update="multipleDeliveryButton"/>
-                        <p:ajax event="toggleSelect" update="multipleDeliveryButton"/>
 
-                        <p:column headerText="#{msgs['user.sureName']}" style="width:10em;">
-                            <h:outputText value="#{user.surName}"/>
+                        <p:ajax event="select" update="usersTable, multipleDeliveryButton"/>
+                        <p:ajax event="unselect" update="usersTable, multipleDeliveryButton"/>
+
+
+                        <p:column headerText="#{msgs['user.sureName']}" style="width:10em">
+                            <h:outputText value="#{userNode.surName}"/>
                         </p:column>
 
                         <p:column headerText="#{msgs['user.name']}" style="width:10em;">
-                            <h:outputText value="#{user.name}"/>
+                            <h:outputText value="#{userNode.name}"/>
                         </p:column>
 
                         <p:column headerText="#{msgs['user.email']}" style="width:10em;">
-                            <h:outputText value="#{user.eMail}"/>
+                            <h:outputText value="#{userNode.eMail}"/>
                         </p:column>
 
                         <p:column headerText="#{msgs['user.mobileNumber']}" style="width:10em;">
-                            <h:outputText value="#{user.mobileNumber}"/>
+                            <h:outputText value="#{userNode.mobileNumber}"/>
                         </p:column>
 
                         <p:column headerText="#{msgs['user.created']}" style="width:10em;">
-                            <h:outputText value="#{user.creationDate}">
+                            <h:outputText value="#{userNode.creationDate}">
                                 <f:convertDateTime pattern="dd/MM/yyyy"/>
                             </h:outputText>
                         </p:column>
 
-                        <p:column headerText="#{msgs['userList.actions']}" rendered="#{!usersBean.multipleDelivery}" style="width:10em;">
+                        <p:column headerText="#{msgs['userList.actions']}" style="width:10em;">
                             <p:commandButton title="#{msgs['userList.sendSMS']}"
                                              icon="ui-icon-mail-closed"
-                                             actionListener="#{usersBean.prepareNewMessage(user)}"
-                                             update="userListForm, sendMessageForm"
+                                             rendered="#{!empty userNode.id}"
+                                             actionListener="#{usersBean.prepareNewMessage(userNode)}"
+                                             update="sendMessageForm"
                                              oncomplete="PF('sendSMSDlg').show();"
                                              styleClass="iconOnlyButton"/>
                             <p:commandButton title="#{msgs['userList.showSMSHistory']}"
+                                             rendered="#{!empty userNode.id}"
                                              icon="ui-icon-folder-open"
-                                             actionListener="#{usersBean.prepareMessageLog(user)}"
+                                             actionListener="#{usersBean.prepareMessageLog(userNode)}"
                                              update="userListForm, messageLogForm"
                                              oncomplete="PF('smsLogDlg').show();"
                                              styleClass="iconOnlyButton"/>
                             <p:commandButton title="#{msgs['userList.edit']}"
+                                             rendered="#{!empty userNode.id}"
                                              icon="ui-icon-pencil"
                                              oncomplete="PF('createEditDlg').show();"
                                              update="userListForm, createEditUserForm"
-                                             actionListener="#{usersBean.startCreateEdit(user)}"
+                                             actionListener="#{usersBean.startCreateEdit(userNode)}"
                                              styleClass="iconOnlyButton"/>
                             <p:commandButton title="#{msgs['userList.delete']}"
                                              icon="ui-icon-trash"
-                                             actionListener="#{usersBean.setUser(user)}"
+                                             rendered="#{!empty userNode.id}"
+                                             actionListener="#{usersBean.setUser(userNode)}"
                                              oncomplete="PF('deleteUserDlg').show();"
                                              styleClass="iconOnlyButton"/>
 
                         </p:column>
                         <f:facet name="header">
-                            <p:commandButton actionListener="#{usersBean.setIsMultipleDelivery(true)}"
-                                             rendered="#{!usersBean.multipleDelivery}"
-                                             title="#{msgs['userList.multipleDelivery']}"
+                            <p:commandButton title="#{msgs['userList.multipleDelivery']}"
+                                             disabled="#{empty usersBean.selectedNodes}"
                                              icon="ui-icon-mail-open"
-                                             update="userListForm"
+                                             id="multipleDeliveryButton"
+                                             update="sendMessageForm"
+                                             actionListener="#{usersBean.prepareNewMessage(null)}"
+                                             oncomplete="PF('sendSMSDlg').show();"
                                              style="width: 30px;margin-left: 61em"
                                              styleClass="iconOnlyButton"/>
+
                             <p:commandButton actionListener="#{usersBean.startCreateEdit(null)}"
-                                             rendered="#{!usersBean.multipleDelivery}"
                                              oncomplete="PF('createEditDlg').show();"
                                              title="#{msgs['userList.newUser']}"
                                              icon="ui-icon-plusthick"
@@ -97,31 +101,14 @@
                                              styleClass="iconOnlyButton"/>
 
                             <p:commandButton
-                                             rendered="#{!usersBean.multipleDelivery}"
                                              onclick="PF('groupManagementDlg').show();"
                                              title="#{msgs['userList.groupManagement']}"
                                              icon="ui-icon-gear"
                                              style="width: 30px"
                                              styleClass="iconOnlyButton"/>
-
-
-                            <p:commandButton value="#{msgs['userList.sendSMS']}"
-                                             icon="ui-icon-mail-open"
-                                             rendered="#{usersBean.multipleDelivery}"
-                                             id="multipleDeliveryButton"
-                                             disabled="#{empty usersBean.selectedUsers}"
-                                             actionListener="#{usersBean.prepareNewMessage(null)}"
-                                             update="userListForm, sendMessageForm"
-                                             oncomplete="PF('sendSMSDlg').show();"
-                                             style="margin-left: 54em"/>
-                            <p:commandButton actionListener="#{usersBean.setIsMultipleDelivery(false)}"
-                                             rendered="#{usersBean.multipleDelivery}"
-                                             value="#{msgs['DialogButton.Cancel']}"
-                                             update="userListForm">
-                            </p:commandButton>
                         </f:facet>
 
-                    </p:dataTable>
+                    </p:treeTable>
                 </p:panel>
             </h:form>
 

@@ -21,7 +21,7 @@ public class UserDAOImpl extends BaseObjectDAOImpl<User> implements UserDAO {
 
     @Override
     public List<User> getAllActiveUsers() {
-        Query query = entityManager.createQuery("select p from USERS p where p.isDeleted=false ORDER BY p.surName, p.id");
+        Query query = entityManager.createQuery("select p from USERS p where p.isDeleted=false ORDER BY p.userGroup.groupName, p.surName, p.id");
         return query.getResultList();
     }
 

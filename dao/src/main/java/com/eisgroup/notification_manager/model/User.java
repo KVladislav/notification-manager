@@ -11,13 +11,13 @@ import java.util.Date;
  * Time: 18:16
  */
 @Entity(name = "USERS")
-public class User extends BaseObject{
+public class User extends BaseObject implements Comparable<User>{
     private String name;
     private String surName;
     private String eMail;
     private String mobileNumber;
     private boolean isDeleted;
-    private boolean isActive;
+    private boolean isActive=true;
     private Date creationDate;
 
     @ManyToOne
@@ -72,10 +72,14 @@ public class User extends BaseObject{
     }
 
     public String getFullName(){
-        return getName() + " " + getSurName();
+        return getSurName() + " " + getName();
     }
 
     public boolean isActive() {
+        return isActive;
+    }
+
+    public boolean getIsActive() {
         return isActive;
     }
 
@@ -89,5 +93,10 @@ public class User extends BaseObject{
 
     public void setUserGroup(UserGroup userGroup) {
         this.userGroup = userGroup;
+    }
+
+    @Override
+    public int compareTo(User user) {
+        return this.getSurName().compareTo(user.getSurName());
     }
 }

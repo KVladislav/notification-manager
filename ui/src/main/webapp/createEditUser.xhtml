@@ -55,6 +55,19 @@
                     <p:message for="userSureName" id="userSureNameMsg" display="text"/>
                 </p:column>
             </p:row>
+            <p:row>
+                <p:column>
+                    <h:outputLabel for="userIsActive" value="#{msgs['user.status']}">
+                        <h:outputLabel value="*" style="color: red"/>
+                    </h:outputLabel>
+                </p:column>
+
+                <p:column colspan="2">
+                    <p:selectBooleanCheckbox id="userIsActive"
+                                             style="width:100%;"
+                                             value="#{usersBean.user.isActive}"/>
+                </p:column>
+            </p:row>
 
 
             <p:row>
