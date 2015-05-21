@@ -52,7 +52,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void createUserGroup(UserGroup userGroup) {
-        userGroupDAO.create(userGroup);
+        UserGroup existedUserGroup = userGroupDAO.getGroupByName(userGroup.getGroupName());
+        if (existedUserGroup != null && existedUserGroup.isDeleted()) {
+            existedUserGroup.setGroupName(userGroup.getGroupName());
+            existedUserGroup.setIsDeleted(false);
+            userGroupDAO.update(existedUserGroup);
+        } else if (existedUserGroup == null) {
+            userGroupDAO.create(userGroup);
+        }
     }
 
     @Override

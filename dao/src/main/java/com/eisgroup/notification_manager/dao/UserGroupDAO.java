@@ -12,4 +12,5 @@ import java.util.List;
  */
 public interface UserGroupDAO extends BaseObjectDAO<UserGroup>{
     List<UserGroup> getAllActiveGroups();
+    UserGroup getGroupByName(String name);
 }
